@@ -6,24 +6,25 @@ export class SigninRouter {
   }
 
   route (httpRequest) {
-    if (!httpRequest?.body || !this.authUseCase?.auth) {
+    try {
+      const { email, password } = httpRequest.body
+      if (!email) {
+        return HttpResponse.badRequest('email')
+      }
+      if (!password) {
+        return HttpResponse.badRequest('password')
+      }
+
+      const accessToken = this.authUseCase.auth(email, password)
+
+      if (!accessToken) {
+        return HttpResponse.unauthorizedError()
+      }
+
+      return HttpResponse.success({ accessToken })
+    } catch (error) {
+      // TODO: add log handler
       return HttpResponse.serverError()
     }
-
-    const { email, password } = httpRequest.body
-    if (!email) {
-      return HttpResponse.badRequest('email')
-    }
-    if (!password) {
-      return HttpResponse.badRequest('password')
-    }
-
-    const accessToken = this.authUseCase.auth(email, password)
-
-    if (!accessToken) {
-      return HttpResponse.unauthorizedError()
-    }
-
-    return HttpResponse.success({ accessToken })
   }
 }

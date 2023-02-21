@@ -1,4 +1,5 @@
 import { MissingParamError } from '../errors/missing-param.error'
+import { ServerError } from '../errors/server.error'
 import { UnauthorizedError } from '../errors/unauthorized.error'
 import { SigninRouter } from './signin.router'
 
@@ -48,6 +49,7 @@ describe('Signin Router', () => {
     const { sut } = makeSut()
     const httpResponse = sut.route()
     expect(httpResponse.statusCode).toBe(500)
+    expect(httpResponse.body).toEqual(new ServerError())
   })
 
   test('Should return 500 if httpRequest has no body', () => {
@@ -55,6 +57,7 @@ describe('Signin Router', () => {
     const httpRequest = {}
     const httpResponse = sut.route(httpRequest)
     expect(httpResponse.statusCode).toBe(500)
+    expect(httpResponse.body).toEqual(new ServerError())
   })
 
   test('Should call AuthUseCase with correct params', () => {
@@ -94,6 +97,7 @@ describe('Signin Router', () => {
     }
     const httpResponse = sut.route(httpRequest)
     expect(httpResponse.statusCode).toBe(500)
+    expect(httpResponse.body).toEqual(new ServerError())
   })
 
   test('Should return 500 if AuthUseCase has no auth method', () => {
@@ -106,6 +110,7 @@ describe('Signin Router', () => {
     }
     const httpResponse = sut.route(httpRequest)
     expect(httpResponse.statusCode).toBe(500)
+    expect(httpResponse.body).toEqual(new ServerError())
   })
 
   test('Should return 200 when valid credentials are provided', () => {
