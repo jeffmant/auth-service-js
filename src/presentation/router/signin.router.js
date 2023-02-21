@@ -6,7 +6,7 @@ export class SigninRouter {
   }
 
   route (httpRequest) {
-    if (!httpRequest || !httpRequest.body) {
+    if (!httpRequest?.body || !this.authUseCase?.auth) {
       return HttpResponse.serverError()
     }
 
