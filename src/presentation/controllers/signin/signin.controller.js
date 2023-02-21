@@ -1,8 +1,8 @@
-import { InvalidParamError } from '../errors/invalid-param.error'
-import { MissingParamError } from '../errors/missing-param.error'
-import { HttpResponse } from '../helpers/http.helper'
+import { InvalidParamError } from '../../errors/invalid-param.error'
+import { MissingParamError } from '../../errors/missing-param.error'
+import { HttpResponse } from '../../helpers/http.helper'
 
-export class SigninRouter {
+export class SigninController {
   constructor (authUseCase, emailValidator) {
     this.authUseCase = authUseCase
     this.emailValidator = emailValidator

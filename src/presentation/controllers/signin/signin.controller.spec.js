@@ -1,8 +1,8 @@
-import { MissingParamError } from '../errors/missing-param.error'
-import { InvalidParamError } from '../errors/invalid-param.error'
-import { ServerError } from '../errors/server.error'
-import { UnauthorizedError } from '../errors/unauthorized.error'
-import { SigninRouter } from './signin.router'
+import { MissingParamError } from '../../errors/missing-param.error'
+import { InvalidParamError } from '../../errors/invalid-param.error'
+import { ServerError } from '../../errors/server.error'
+import { UnauthorizedError } from '../../errors/unauthorized.error'
+import { SigninController } from './signin.controller'
 
 class AuthUseCaseStub {
   accessToken = 'valid_token'
@@ -27,7 +27,7 @@ const makeEmailValidator = () => new EmailValidatorStub()
 const makeSut = () => {
   const authUseCaseStub = makeAuthUseCaseStub()
   const emailValidatorStub = makeEmailValidator()
-  const sut = new SigninRouter(authUseCaseStub, emailValidatorStub)
+  const sut = new SigninController(authUseCaseStub, emailValidatorStub)
   return {
     sut,
     authUseCaseStub,
@@ -35,7 +35,7 @@ const makeSut = () => {
   }
 }
 
-describe('Signin Router', () => {
+describe('Signin Controller', () => {
   test('Should return 400 if no email is provided', async () => {
     const { sut } = makeSut()
     const httpRequest = {
@@ -102,7 +102,7 @@ describe('Signin Router', () => {
   })
 
   test('Should return 500 if no AuthUseCase is provided', async () => {
-    const sut = new SigninRouter()
+    const sut = new SigninController()
     const httpRequest = {
       body: {
         email: 'any@email.com',
@@ -115,7 +115,7 @@ describe('Signin Router', () => {
   })
 
   test('Should return 500 if AuthUseCase has no auth method', async () => {
-    const sut = new SigninRouter({})
+    const sut = new SigninController({})
     const httpRequest = {
       body: {
         email: 'any@email.com',
@@ -140,8 +140,8 @@ describe('Signin Router', () => {
     expect(httpResponse.body.accessToken).toBe(authUseCaseStub.accessToken)
   })
 
-  test('Should throw when SigninRouter route throws', () => {
-    const sut = new SigninRouter()
+  test('Should throw when SigninController route throws', () => {
+    const sut = new SigninController()
     const routeSpy = jest.spyOn(sut, 'route').mockImplementationOnce(() => { throw new Error() })
     expect(routeSpy).toThrow(new Error())
   })
