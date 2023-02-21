@@ -4,5 +4,8 @@ module.exports = {
   coverageProvider: 'v8',
   transform: {
     '^.+\\.[t|j]sx?$': 'babel-jest'
-  }
+  },
+  coveragePathIgnorePatterns: [
+    'index.js'
+  ]
 }
