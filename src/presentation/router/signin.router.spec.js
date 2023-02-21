@@ -6,11 +6,13 @@ class AuthUseCaseStub {
   auth (email, password) {
     this.email = email
     this.password = password
+    return this.accessToken
   }
 }
 
 const makeSut = () => {
   const authUseCaseStub = new AuthUseCaseStub()
+  authUseCaseStub.accessToken = 'valid_token'
   const sut = new SigninRouter(authUseCaseStub)
   return {
     sut,
@@ -69,7 +71,8 @@ describe('Signin Router', () => {
   })
 
   test('Should return 401 when invalid credentials are provided', () => {
-    const { sut } = makeSut()
+    const { sut, authUseCaseStub } = makeSut()
+    authUseCaseStub.accessToken = null
     const httpRequest = {
       body: {
         email: 'any@email.com',
@@ -103,5 +106,17 @@ describe('Signin Router', () => {
     }
     const httpResponse = sut.route(httpRequest)
     expect(httpResponse.statusCode).toBe(500)
+  })
+
+  test('Should return 200 when valid credentials are provided', () => {
+    const { sut } = makeSut()
+    const httpRequest = {
+      body: {
+        email: 'valid@email.com',
+        password: 'valid_password'
+      }
+    }
+    const httpResponse = sut.route(httpRequest)
+    expect(httpResponse.statusCode).toBe(200)
   })
 })
