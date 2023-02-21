@@ -125,4 +125,10 @@ describe('Signin Router', () => {
     expect(httpResponse.statusCode).toBe(200)
     expect(httpResponse.body.accessToken).toBe(authUseCaseStub.accessToken)
   })
+
+  test('Should throw when SigninRouter route throws', () => {
+    const sut = new SigninRouter()
+    const routeSpy = jest.spyOn(sut, 'route').mockImplementationOnce(() => { throw new Error() })
+    expect(routeSpy).toThrow(new Error())
+  })
 })
