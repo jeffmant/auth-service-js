@@ -66,4 +66,16 @@ describe('Signin Router', () => {
     expect(authUseCaseStub.email).toBe(httpRequest.body.email)
     expect(authUseCaseStub.password).toBe(httpRequest.body.password)
   })
+
+  test('Should return 401 when invalid credentials are provided', () => {
+    const { sut } = makeSut()
+    const httpRequest = {
+      body: {
+        email: 'any@email.com',
+        password: 'any_password'
+      }
+    }
+    const httpResponse = sut.route(httpRequest)
+    expect(httpResponse.statusCode).toBe(401)
+  })
 })
