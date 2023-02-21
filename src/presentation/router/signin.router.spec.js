@@ -109,7 +109,7 @@ describe('Signin Router', () => {
   })
 
   test('Should return 200 when valid credentials are provided', () => {
-    const { sut } = makeSut()
+    const { sut, authUseCaseStub } = makeSut()
     const httpRequest = {
       body: {
         email: 'valid@email.com',
@@ -118,5 +118,6 @@ describe('Signin Router', () => {
     }
     const httpResponse = sut.route(httpRequest)
     expect(httpResponse.statusCode).toBe(200)
+    expect(httpResponse.body.accessToken).toBe(authUseCaseStub.accessToken)
   })
 })
