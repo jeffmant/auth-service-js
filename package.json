@@ -2,8 +2,8 @@
   "name": "auth-service",
   "version": "1.0.0",
   "scripts": {
-    "test": "jest --passWithNoTests",
-    "test:staged": "npm test",
+    "test": "jest --silent --noStackTrace",
+    "test:staged": "npm test -- --passWithNoTests",
     "test:unit": "npm test -- --watchAll",
     "prepare": "husky install"
   },
