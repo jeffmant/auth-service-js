@@ -24,6 +24,6 @@ export class SigninRouter {
       return HttpResponse.unauthorizedError()
     }
 
-    return HttpResponse.success()
+    return HttpResponse.success({ accessToken })
   }
 }

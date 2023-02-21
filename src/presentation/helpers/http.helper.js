@@ -2,9 +2,10 @@ import { MissingParamError } from '../errors/missing-param.error'
 import { UnauthorizedError } from '../errors/unauthorized.error'
 
 export class HttpResponse {
-  static success () {
+  static success (data) {
     return {
-      statusCode: 200
+      statusCode: 200,
+      body: data
     }
   }
 
