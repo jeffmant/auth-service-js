@@ -19,5 +19,8 @@ export class SigninRouter {
     }
 
     this.authUseCase.auth(email, password)
+    return {
+      statusCode: 401
+    }
   }
 }
