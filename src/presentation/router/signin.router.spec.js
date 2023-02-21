@@ -1,4 +1,5 @@
 import { MissingParamError } from '../errors/missing-param.error'
+import { UnauthorizedError } from '../errors/unauthorized.error'
 import { SigninRouter } from './signin.router'
 
 class AuthUseCaseStub {
@@ -77,5 +78,6 @@ describe('Signin Router', () => {
     }
     const httpResponse = sut.route(httpRequest)
     expect(httpResponse.statusCode).toBe(401)
+    expect(httpResponse.body).toEqual(new UnauthorizedError())
   })
 })
