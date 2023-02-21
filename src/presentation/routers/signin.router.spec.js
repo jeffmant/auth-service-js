@@ -1,9 +1,11 @@
 import { MissingParamError } from '../errors/missing-param.error'
+import { InvalidParamError } from '../errors/invalid-param.error'
 import { ServerError } from '../errors/server.error'
 import { UnauthorizedError } from '../errors/unauthorized.error'
 import { SigninRouter } from './signin.router'
 
 class AuthUseCaseStub {
+  accessToken = 'valid_token'
   async auth (email, password) {
     this.email = email
     this.password = password
@@ -11,13 +13,25 @@ class AuthUseCaseStub {
   }
 }
 
+const makeAuthUseCaseStub = () => new AuthUseCaseStub()
+
+class EmailValidatorStub {
+  isEmailValid = true
+  isValid (email) {
+    return this.isEmailValid
+  }
+}
+
+const makeEmailValidator = () => new EmailValidatorStub()
+
 const makeSut = () => {
-  const authUseCaseStub = new AuthUseCaseStub()
-  authUseCaseStub.accessToken = 'valid_token'
-  const sut = new SigninRouter(authUseCaseStub)
+  const authUseCaseStub = makeAuthUseCaseStub()
+  const emailValidatorStub = makeEmailValidator()
+  const sut = new SigninRouter(authUseCaseStub, emailValidatorStub)
   return {
     sut,
-    authUseCaseStub
+    authUseCaseStub,
+    emailValidatorStub
   }
 }
 
@@ -130,5 +144,19 @@ describe('Signin Router', () => {
     const sut = new SigninRouter()
     const routeSpy = jest.spyOn(sut, 'route').mockImplementationOnce(() => { throw new Error() })
     expect(routeSpy).toThrow(new Error())
+  })
+
+  test('Should return 400 if an invalid email is provided', async () => {
+    const { sut, emailValidatorStub } = makeSut()
+    emailValidatorStub.isEmailValid = false
+    const httpRequest = {
+      body: {
+        email: 'invalid_email',
+        password: 'any_password'
+      }
+    }
+    const httpResponse = await sut.route(httpRequest)
+    expect(httpResponse.statusCode).toBe(400)
+    expect(httpResponse.body).toEqual(new InvalidParamError('email'))
   })
 })
