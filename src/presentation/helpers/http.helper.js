@@ -1,7 +1,10 @@
+import { MissingParamError } from '../errors/missing-param.error'
+
 export class HttpResponse {
-  static badRequest () {
+  static badRequest (paramName) {
     return {
-      statusCode: 400
+      statusCode: 400,
+      body: new MissingParamError(paramName)
     }
   }
 
