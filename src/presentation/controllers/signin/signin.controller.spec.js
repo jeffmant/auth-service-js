@@ -20,6 +20,7 @@ const makeAuthUseCaseStub = () => new AuthUseCaseStub()
 class EmailValidatorStub {
   isEmailValid = true
   isValid (email) {
+    this.email = email
     return this.isEmailValid
   }
 }
@@ -45,7 +46,7 @@ describe('Signin Controller', () => {
         password: 'any_password'
       }
     }
-    const httpResponse = await sut.route(httpRequest)
+    const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse.statusCode).toBe(400)
     expect(httpResponse.body).toEqual(new MissingParamError('email'))
   })
@@ -57,13 +58,13 @@ describe('Signin Controller', () => {
         email: 'any@email.com'
       }
     }
-    const httpResponse = await sut.route(httpRequest)
+    const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse.statusCode).toBe(400)
   })
 
   test('Should return 500 if no httpRequest is provided', async () => {
     const { sut } = makeSut()
-    const httpResponse = await sut.route()
+    const httpResponse = await sut.handle()
     expect(httpResponse.statusCode).toBe(500)
     expect(httpResponse.body).toEqual(new ServerError())
   })
@@ -71,7 +72,7 @@ describe('Signin Controller', () => {
   test('Should return 500 if httpRequest has no body', async () => {
     const { sut } = makeSut()
     const httpRequest = {}
-    const httpResponse = await sut.route(httpRequest)
+    const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse.statusCode).toBe(500)
     expect(httpResponse.body).toEqual(new ServerError())
   })
@@ -84,7 +85,7 @@ describe('Signin Controller', () => {
         password: 'any_password'
       }
     }
-    await sut.route(httpRequest)
+    await sut.handle(httpRequest)
     expect(authUseCaseStub.email).toBe(httpRequest.body.email)
     expect(authUseCaseStub.password).toBe(httpRequest.body.password)
   })
@@ -98,7 +99,7 @@ describe('Signin Controller', () => {
         password: 'any_password'
       }
     }
-    const httpResponse = await sut.route(httpRequest)
+    const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse.statusCode).toBe(401)
     expect(httpResponse.body).toEqual(new UnauthorizedError())
   })
@@ -111,7 +112,7 @@ describe('Signin Controller', () => {
         password: 'any_password'
       }
     }
-    const httpResponse = await sut.route(httpRequest)
+    const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse.statusCode).toBe(500)
     expect(httpResponse.body).toEqual(new ServerError())
   })
@@ -124,7 +125,7 @@ describe('Signin Controller', () => {
         password: 'any_password'
       }
     }
-    const httpResponse = await sut.route(httpRequest)
+    const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse.statusCode).toBe(500)
     expect(httpResponse.body).toEqual(new ServerError())
   })
@@ -137,15 +138,9 @@ describe('Signin Controller', () => {
         password: 'valid_password'
       }
     }
-    const httpResponse = await sut.route(httpRequest)
+    const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse.statusCode).toBe(200)
     expect(httpResponse.body.accessToken).toBe(authUseCaseStub.accessToken)
-  })
-
-  test('Should throw when SigninController route throws', () => {
-    const sut = new SigninController()
-    const routeSpy = jest.spyOn(sut, 'route').mockImplementationOnce(() => { throw new Error() })
-    expect(routeSpy).toThrow(new Error())
   })
 
   test('Should return 400 if an invalid email is provided', async () => {
@@ -157,7 +152,7 @@ describe('Signin Controller', () => {
         password: 'any_password'
       }
     }
-    const httpResponse = await sut.route(httpRequest)
+    const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse.statusCode).toBe(400)
     expect(httpResponse.body).toEqual(new InvalidParamError('email'))
   })
@@ -171,7 +166,7 @@ describe('Signin Controller', () => {
         password: 'any_password'
       }
     }
-    const httpResponse = await sut.route(httpRequest)
+    const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse.statusCode).toBe(500)
     expect(httpResponse.body).toEqual(new ServerError())
   })
@@ -185,7 +180,39 @@ describe('Signin Controller', () => {
         password: 'any_password'
       }
     }
-    const httpResponse = await sut.route(httpRequest)
+    const httpResponse = await sut.handle(httpRequest)
+    expect(httpResponse.statusCode).toBe(500)
+    expect(httpResponse.body).toEqual(new ServerError())
+  })
+
+  test('Should throw when AuthUseCase throws', async () => {
+    const authUseCaseStub = makeAuthUseCaseStub()
+    const emailValidatorStub = makeEmailValidator()
+    jest.spyOn(authUseCaseStub, 'auth').mockImplementationOnce(() => { throw new Error() })
+    const sut = new SigninController(authUseCaseStub, emailValidatorStub)
+    const httpRequest = {
+      body: {
+        email: 'any@email.com',
+        password: 'any_password'
+      }
+    }
+    const httpResponse = await sut.handle(httpRequest)
+    expect(httpResponse.statusCode).toBe(500)
+    expect(httpResponse.body).toEqual(new ServerError())
+  })
+
+  test('Should throw when EmailValidator throws', async () => {
+    const authUseCaseStub = makeAuthUseCaseStub()
+    const emailValidatorStub = makeEmailValidator()
+    jest.spyOn(emailValidatorStub, 'isValid').mockImplementationOnce(() => { throw new Error() })
+    const sut = new SigninController(authUseCaseStub, emailValidatorStub)
+    const httpRequest = {
+      body: {
+        email: 'invalid_email',
+        password: 'any_password'
+      }
+    }
+    const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse.statusCode).toBe(500)
     expect(httpResponse.body).toEqual(new ServerError())
   })

@@ -7,7 +7,7 @@ export class SigninController {
     this.emailValidator = emailValidator
   }
 
-  async route (httpRequest) {
+  async handle (httpRequest) {
     try {
       const { email, password } = httpRequest.body
 
