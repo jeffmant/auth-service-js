@@ -1,5 +1,5 @@
-import { InvalidParamError, MissingParamError } from '../../errors'
-import { HttpResponse } from '../../helpers/http.helper'
+import { InvalidParamError, MissingParamError } from '../errors'
+import { HttpResponse } from '../helpers/http.helper'
 
 export class SigninController {
   constructor (authUseCase, emailValidator) {

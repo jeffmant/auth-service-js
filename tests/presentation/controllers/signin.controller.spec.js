@@ -1,10 +1,10 @@
-import { SigninController } from './signin.controller'
+import { SigninController } from '../../../src/presentation/controllers/signin.controller'
 import {
   InvalidParamError,
   MissingParamError,
   ServerError,
   UnauthorizedError
-} from '../../errors'
+} from '../../../src/presentation/errors'
 
 class AuthUseCaseStub {
   accessToken = 'valid_token'
