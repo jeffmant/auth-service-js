@@ -1,4 +1,4 @@
-import SigninRouter from './signin.router'
+import { SigninRouter } from './signin.router'
 
 describe('Signin Router', () => {
   test('Should return 400 if no email is provided', () => {

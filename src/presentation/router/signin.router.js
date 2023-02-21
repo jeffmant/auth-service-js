@@ -1,16 +1,14 @@
-export default class SigninRouter {
+import { HttpResponse } from '../helpers/http.helper'
+
+export class SigninRouter {
   route (httpRequest) {
     if (!httpRequest || !httpRequest.body) {
-      return {
-        statusCode: 500
-      }
+      return HttpResponse.serverError()
     }
 
     const { email, password } = httpRequest.body
     if (!email || !password) {
-      return {
-        statusCode: 400
-      }
+      return HttpResponse.badRequest()
     }
   }
 }
