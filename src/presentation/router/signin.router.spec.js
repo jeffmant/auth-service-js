@@ -1,3 +1,4 @@
+import { MissingParamError } from '../errors/missing-param.error'
 import { SigninRouter } from './signin.router'
 
 describe('Signin Router', () => {
@@ -10,6 +11,7 @@ describe('Signin Router', () => {
     }
     const httpResponse = sut.route(httpRequest)
     expect(httpResponse.statusCode).toBe(400)
+    expect(httpResponse.body).toEqual(new MissingParamError('email'))
   })
 
   test('Should return 400 if no password is provided', () => {
