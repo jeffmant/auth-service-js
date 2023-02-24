@@ -6,6 +6,7 @@ module.exports = {
     '^.+\\.[t|j]sx?$': 'babel-jest'
   },
   coveragePathIgnorePatterns: [
-    'index.js'
+    'index.js',
+    'node_modules'
   ]
 }

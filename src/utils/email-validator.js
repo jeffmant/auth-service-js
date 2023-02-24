@@ -1,5 +1,7 @@
+import validator from 'validator'
+
 export class EmailValidator {
-  async isValid () {
-    return true
+  async isValid (email) {
+    return validator.isEmail(email)
   }
 }
